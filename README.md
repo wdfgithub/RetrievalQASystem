@@ -4,7 +4,3 @@
 python3 main.py
 
 语料来源：https://github.com/codemayq/chinese_chatbot_corpus
-
-运行效果：
-
-
