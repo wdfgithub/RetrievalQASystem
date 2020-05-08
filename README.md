@@ -6,4 +6,4 @@ python3 main.py
 语料来源：https://github.com/codemayq/chinese_chatbot_corpus
 
 
-![image](https://github.com/wdfgithub/Chinese-retrieval-QA-system/blob/master/effect.png)
+![Image text](https://raw.githubusercontent.com/wdfgithub/Chinese-retrieval-QA-system/master/effect.png)
