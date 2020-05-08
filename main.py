@@ -97,7 +97,7 @@ for i in inverted.keys():
     idf[i] = idf_
 
 root = Tk()
-root.title(u'chinese-chatbot')
+root.title(u'中文检索式问答系统')
 
 root.geometry('570x388')
 frame_left_top = Frame(width=570, height=320)
