@@ -12,47 +12,7 @@ import pandas as pd
 sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf8')
 
 flag = 0
-def sendmessage():
-    starttime = time.time()
-    #text_msglist.delete('0.0', END)
-    global flag
-    if flag == 0:
-        text_msglist.insert(END, 'qa pair数量：'+str(qa_pair_size)+'        word数量：'+str(len(inverted))+'\n')
-        flag = 1
-    query = text_msg.get()
-    tmp_words = jieba.lcut(query)
-    words = []
-    score = {}
-    for i in tmp_words:
-        s = i.lower()
-        s = i.replace(' ','')
-        s = "".join(s.split())
-        if s and not s in punctuation:
-            words.append(s)
-    for i in range(len(quesion_list)):
-        score[i] = 0
-    for word in words:
-        tf = 0
-        if word in inverted.keys() and i in inverted[word]:
-            tf = inverted[word][i]
-
-        if word in idf and tf != 0:
-            score[i] += idf[word]*(math.sqrt(2*tf**2))
-        score[i] /= (size_of_word[i]+1)
-
-    score=sorted(score.items(), key=lambda x:x[1],reverse=True)
-
-    msgcontent = 'quetion：'+text_msg.get()+'\n'
-    for (k,v) in score:
-        msgcontent += 'answer: '+answer_list[k]+'\n'
-        break
-    endtime = time.time()
-    dtime = endtime - starttime
-    msgcontent += '耗时'+str(dtime*1000)+' ms\n'
-    text_msglist.insert(END, msgcontent)
-    text_msg.delete(0, END)
-
-folder_path = 'chinese_chatbot_corpus-master\\clean_chat_corpus'
+folder_path = './data'
 inverted = {}
 quesion_list = []
 size_of_word = []
@@ -60,7 +20,7 @@ answer_list = []
 qa_pair_size = 0
 
 for file in os.listdir(folder_path):
-    f_name = os.path.join('%s\\%s' % (folder_path, file))
+    f_name = os.path.join('%s/%s' % (folder_path, file))
     data = pd.read_csv(f_name, sep='\t', names=['quetion','answer'])
     punctuation = ',./;\'[]\\-=_+{}|:\"<>?~!@#$%^&*()，。《》；：’”“‘【】、（）！￥……？·`——．'
     for i in range(data.index.size):
@@ -95,16 +55,53 @@ for i in inverted.keys():
     word_in_qa_pair_size=len(inverted[i].keys())
     idf_ = math.log(qa_pair_size/word_in_qa_pair_size)
     idf[i] = idf_
+def sendmessage():
+    starttime = time.time()
+    #text_msglist.delete('0.0', END)
+    global flag
+    if flag == 0:
+        text_msglist.insert(END, 'qa pair数量：'+str(qa_pair_size)+'        word数量：'+str(len(inverted))+'\n')
+        flag = 1
+    query = text_msg.get()
+    tmp_words = jieba.lcut(query)
+    words = []
+    score = {}
+    for i in tmp_words:
+        s = i.lower()
+        s = i.replace(' ','')
+        s = "".join(s.split())
+        if s and not s in punctuation:
+            words.append(s)
+    for i in range(len(quesion_list)):
+        score[i] = 0
+        for word in words:
+            tf = 0
+            if word in inverted.keys() and i in inverted[word]:
+                tf = inverted[word][i]
+            if word in idf and tf != 0:
+                score[i] += idf[word]*(math.sqrt(2*tf**2))
+            score[i] /= (size_of_word[i]+1)
+
+    score=sorted(score.items(), key=lambda x:x[1],reverse=True)
+    msgcontent = 'quetion：'+text_msg.get()+'\n'
+    for (k,v) in score:
+        msgcontent += 'answer: '+answer_list[k]+'\n'
+        break
+    endtime = time.time()
+    dtime = endtime - starttime
+    msgcontent += '耗时'+str(dtime*1000)+' ms\n'
+    text_msglist.insert(END, msgcontent)
+    text_msg.delete(0, END)
 
 root = Tk()
 root.title(u'中文检索式问答系统')
 
-root.geometry('570x388')
-frame_left_top = Frame(width=570, height=320)
-frame_left_center = Frame(width=560, height=20)
-frame_left_bottom = Frame(width=570, height=25)
+root.geometry('1210x830')
+frame_left_top = Frame(width=1190, height=700)
+frame_left_center = Frame(width=1190, height=45)
+frame_left_bottom = Frame(width=1210, height=45)
 text_msglist = Text(frame_left_top,bg='#f3f3f4')
-text_msg = Entry(frame_left_center,bg='#f3f3f4',width=560);
+text_msg = Entry(frame_left_center,bg='#f3f3f4',width=1190)
 button_sendmsg = Button(frame_left_bottom,bg='#494a5f', fg='#f3f3f4',text='搜索', command=sendmessage)
 
 frame_left_top.grid(row=0, column=0, padx=2, pady=5)
